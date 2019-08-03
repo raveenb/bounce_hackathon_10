@@ -5,7 +5,7 @@ import MarkerLayer from '../src/MarkerLayer';
 import PubNub from 'pubnub';
 import uuid from "uuid";
 
-const custPos = {
+const sampleCustomerPositions = {
     "0": [40.763154, -73.920827],
     "1": [40.6894932, -73.942061],
     "10": [40.70255088, -73.98940236],
@@ -107,9 +107,8 @@ const custPos = {
     "98": [40.76009437, -73.99461843],
     "99": [40.74144387, -73.97536082]
 };
-const surge = [10, 15, 20, 25, 30]
-var cid = 1;
 
+const sampleSurgeAndWaitValues = [10, 15, 20, 25, 30];
 
 class ExampleMarkerComponent extends React.Component {
 
@@ -141,10 +140,10 @@ class MapExample extends React.Component {
             publishKey: 'pub-c-245d8fa3-4f76-492c-95ec-70a44eddf994',
         });
 
-        this.pos = MapExample.genPos();
-        this.surge = MapExample.genSurge();
+        this.position = MapExample.genPos();
+        this.surgeValue = MapExample.genSurge();
         this.waitTime = MapExample.genSurge();
-        this.cusId = uuid();
+        this.customerId = uuid();
         this.acceptance = "Processing";
         this.eta = "--";
 
@@ -158,10 +157,11 @@ class MapExample extends React.Component {
         this.pubnub.publish(
             {
                 message: {
-                    pos: this.pos,
-                    cusId: this.cusId,
-                    surge: this.surge,
+                    position: this.position,
+                    customerId: this.customerId,
+                    surge: this.surgeValue,
                     waitTime: this.waitTime,
+                    source: this.props.clientDisplay ? "customer" : "truck",
                 },
                 channel: this.publishChannel,
                 sendByPost: false, // true to send via POST
@@ -193,7 +193,7 @@ class MapExample extends React.Component {
             },
             message: (message) => {
                 console.log(message.message);
-                if (message.message.cusId === this.cusId) {
+                if (message.message.customerId === this.customerId) {
                     this.acceptance = message.message.acceptance;
                     this.eta = message.message.eta;
                     this.forceUpdate();
@@ -208,15 +208,15 @@ class MapExample extends React.Component {
 
 
     static genPos() {
-        const keys = Object.keys(custPos);
+        const keys = Object.keys(sampleCustomerPositions);
         const randIndex = Math.floor(Math.random() * keys.length);
         const randKey = keys[randIndex];
-        return custPos[randKey];
+        return sampleCustomerPositions[randKey];
     };
 
     static genSurge() {
-        const randIndex = Math.floor(Math.random() * surge.length);
-        return surge[randIndex];
+        const randIndex = Math.floor(Math.random() * sampleSurgeAndWaitValues.length);
+        return sampleSurgeAndWaitValues[randIndex];
     }
 
     state = {
@@ -232,7 +232,7 @@ class MapExample extends React.Component {
 
     componentWillUnmount() {
         this.pubnub.unsubscribe({
-            channels: ['customersubscribe']
+            channels: [this.subscribeChannel]
         });
     }
 
@@ -246,11 +246,11 @@ class MapExample extends React.Component {
             );
         }
 
-        const pos = this.pos;
-        const position = {lng: pos[1], lat: pos[0]};
+        const currentPosition = this.position;
+        const mapCenterPosition = {lng: currentPosition[1], lat: currentPosition[0]};
         const markers = [
             {
-                position: {lng: pos[1], lat: pos[0]},
+                position: {lng: currentPosition[1], lat: currentPosition[0]},
                 text: 'Current location',
             },
         ];
@@ -258,7 +258,7 @@ class MapExample extends React.Component {
         const latitudeExtractor = m => m.position.lat;
         return (
             <div>
-                <Map center={position} zoom={16} maxZoom={20}>
+                <Map center={mapCenterPosition} zoom={16} maxZoom={20}>
                     {!this.state.layerHidden && <MarkerLayer
                         markers={markers}
                         longitudeExtractor={longitudeExtractor}
@@ -270,12 +270,11 @@ class MapExample extends React.Component {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     />
                 </Map>
-                <p>{pos}</p>
-
+                <p>{currentPosition}</p>
                 {this.props.clientDisplay
                     ? <div>
                         <div style={{color: "red"}}>
-                            <p>Surge: {this.surge}% </p>
+                            <p>Surge: {this.surgeValue}% </p>
                             <p>Acceptable time: {this.waitTime} mins </p>
                         </div>
                         <div style={{color: "red"}}>
@@ -286,7 +285,7 @@ class MapExample extends React.Component {
                     : <div>
                         <div style={{color: "red"}}>
                             <p>Expected Arrival time: {this.waitTime} mins </p>
-                            <p>Distance: {this.surge}mts </p>
+                            <p>Distance: {this.surgeValue}mts </p>
                         </div>
                     </div>
                 }
