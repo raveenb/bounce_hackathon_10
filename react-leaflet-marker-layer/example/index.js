@@ -273,17 +273,17 @@ class MapExample extends React.Component {
                 <p>{currentPosition}</p>
                 {this.props.clientDisplay
                     ? <div>
-                        <div style={{color: "red"}}>
+                        <div>
                             <p>Surge: {this.surgeValue}% </p>
                             <p>Acceptable time: {this.waitTime} mins </p>
                         </div>
-                        <div style={{color: "red"}}>
+                        <div>
                             <p>Accepted/Declined state: {this.acceptance}</p>
                             <p>Expected time: {this.eta}</p>
                         </div>
                     </div>
                     : <div>
-                        <div style={{color: "red"}}>
+                        <div>
                             <p>Expected Arrival time: {this.waitTime} mins </p>
                             <p>Distance: {this.surgeValue}mts </p>
                         </div>
@@ -299,33 +299,35 @@ class MapView extends React.Component {
     render() {
         return (
             <div>
-                <table style={{width: "100%"}}>
+                <table style={{width: "100%", border: "1px solid black"}}>
                     <tbody>
-                    <tr>
-                        <td>
+                    <tr style={{border: "1px solid black"}}>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
+
                     </tr>
-                    <tr>
-                        <td>
+
+                    <tr style={{border: "1px solid black"}}>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
                     </tr>
@@ -340,33 +342,34 @@ class TruckView extends React.Component {
     render() {
         return (
             <div>
-                <table style={{width: "100%"}}>
+                <table style={{width: "100%", border: "1px solid black"}}>
                     <tbody>
-                    <tr>
-                        <td>
+                    <tr style={{border: "1px solid black"}}>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
+
+                    <tr style={{border: "1px solid black"}}>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
-                        <td>
+                        <td style={{border: "1px solid black", padding: "10px"}}>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
                     </tr>
