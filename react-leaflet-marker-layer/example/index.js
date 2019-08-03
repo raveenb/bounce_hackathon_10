@@ -1,8 +1,9 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {Map, Marker, Popup, TileLayer} from 'react-leaflet';
+import {Map, TileLayer} from 'react-leaflet';
 import MarkerLayer from '../src/MarkerLayer';
 import PubNub from 'pubnub';
+import uuid from "uuid";
 
 const custPos = {
     "0": [40.763154, -73.920827],
@@ -107,21 +108,8 @@ const custPos = {
     "99": [40.74144387, -73.97536082]
 };
 const surge = [10, 15, 20, 25, 30]
-//const surgeAccept = [0,1]
 var cid = 1;
 
-// const position = { lng: 77.580643, lat: 12.972442 };
-// const markers = [
-//   {
-//     position: { lng: 77.580643, lat: 12.972442 },
-//     text: 'Current location',
-//   },
-// ];
-
-const markerToBeAdded = {
-    position: {lng: -119.0638890000001, lat: 40.883056000001},
-    text: 'Black Rock City'
-};
 
 class ExampleMarkerComponent extends React.Component {
 
@@ -143,34 +131,30 @@ class ExampleMarkerComponent extends React.Component {
 
 }
 
-//const longitudeExtractor = m => m.position.lng;
-//const latitudeExtractor = m => m.position.lat;
-
 class MapExample extends React.Component {
 
     constructor(props) {
         super(props);
 
-        var pubnub = new PubNub({
+        this.pubnub = new PubNub({
             subscribeKey: "sub-c-7618369a-b5e1-11e9-b6f7-eea0353b68c5",
             publishKey: 'pub-c-245d8fa3-4f76-492c-95ec-70a44eddf994',
-            //secretKey: "secretKey",
-            //ssl: true
-        })
-        this.pubnub = pubnub;
+        });
 
-        this.pos = this.genPos();
-        this.surge = this.genSurge();
-        this.waitTime = this.genSurge();
-        this.cusId = cid++;
+        this.pos = MapExample.genPos();
+        this.surge = MapExample.genSurge();
+        this.waitTime = MapExample.genSurge();
+        this.cusId = uuid();
         this.acceptance = "Processing";
         this.eta = "--";
+
+        this.publishChannel = "customerpublish";
+        this.subscribeChannel = "customersubscribe";
 
         this.subscribe = this.subscribe.bind(this);
     }
 
     publish() {
-
         this.pubnub.publish(
             {
                 message: {
@@ -179,7 +163,7 @@ class MapExample extends React.Component {
                     surge: this.surge,
                     waitTime: this.waitTime,
                 },
-                channel: 'customerpublish',
+                channel: this.publishChannel,
                 sendByPost: false, // true to send via POST
                 storeInHistory: false, //override default storage options
                 meta: {
@@ -209,61 +193,38 @@ class MapExample extends React.Component {
             },
             message: (message) => {
                 console.log(message.message);
-                // console.log(message.cusId);
-                console.log(this);
                 if (message.message.cusId === this.cusId) {
-                    console.log(message.message.acceptance);
                     this.acceptance = message.message.acceptance;
                     this.eta = message.message.eta;
                     this.forceUpdate();
                 }
-
             }
         });
 
         this.pubnub.subscribe({
-            channels: ['customersubscribe']
+            channels: [this.subscribeChannel]
         });
     }
 
 
-    genPos() {
+    static genPos() {
         const keys = Object.keys(custPos);
         const randIndex = Math.floor(Math.random() * keys.length);
         const randKey = keys[randIndex];
-        const Pos = custPos[randKey];
-        return Pos;
+        return custPos[randKey];
     };
 
-    genSurge() {
-        //const keys = Object.keys(custPos);
+    static genSurge() {
         const randIndex = Math.floor(Math.random() * surge.length);
-        // const randKey = keys[randIndex];
-        const surgePrice = surge[randIndex];
-        return surgePrice;
+        return surge[randIndex];
     }
-
-    // genSurgeAccept(){
-    //   const randIndex = Math.floor(Math.random() * surge.length);
-    //   // const randKey = keys[randIndex];
-    //   const surgePrice = surge[randIndex];
-    //   return surgePrice;
-    // }
 
     state = {
         mapHidden: false,
         layerHidden: false,
-        //markers: markers,
         msg: null
     };
 
-    // _moveMarker() {
-    //   setTimeout(() => {
-    //     markers[0].position.lng = markers[0].position.lng + 2;
-    //     this.setState({ markers: Array.from(markers) });
-    //   }, 1000 * 1);
-    // }
-    //
     componentDidMount() {
         this.subscribe();
         this.publish();
@@ -309,9 +270,6 @@ class MapExample extends React.Component {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     />
                 </Map>
-                {/*<input type="button" value="Toggle Map" onClick={() => this.setState({ mapHidden: !this.state.mapHidden })} />*/}
-                {/*<input type="button" value="Toggle Layer" onClick={() => this.setState({ layerHidden: !this.state.layerHidden })} />*/}
-                {/*{!!this.state.msg && this.state.msg}*/}
                 <p>{pos}</p>
 
                 {this.props.clientDisplay
@@ -330,27 +288,18 @@ class MapExample extends React.Component {
                             <p>Expected Arrival time: {this.waitTime} mins </p>
                             <p>Distance: {this.surge}mts </p>
                         </div>
-                        {/*<div style={{color: "red"}}>*/}
-                        {/*    <p>Accepted/Declined state: {this.acceptance}</p>*/}
-                        {/*    <p>Expected time: {this.eta}</p>*/}
-                        {/*</div>*/}
                     </div>
                 }
             </div>
         );
     }
-
 }
 
 
 class MapView extends React.Component {
-
-
     render() {
-
         return (
             <div>
-
                 <table style={{width: "100%"}}>
                     <tbody>
                     <tr>
@@ -366,9 +315,7 @@ class MapView extends React.Component {
                         <td>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
                         </td>
-
                     </tr>
-
                     <tr>
                         <td>
                             <MapExample clientDisplay={true} truckDisplay={false}/>
@@ -385,23 +332,15 @@ class MapView extends React.Component {
                     </tr>
                     </tbody>
                 </table>
-
-
             </div>
-
         );
     }
-
 }
 
 class TruckView extends React.Component {
-
-
     render() {
-
         return (
             <div>
-
                 <table style={{width: "100%"}}>
                     <tbody>
                     <tr>
@@ -418,7 +357,6 @@ class TruckView extends React.Component {
                             <MapExample clientDisplay={false} truckDisplay={true}/>
                         </td>
                     </tr>
-
                     <tr>
                         <td>
                             <MapExample clientDisplay={false} truckDisplay={true}/>
@@ -435,13 +373,9 @@ class TruckView extends React.Component {
                     </tr>
                     </tbody>
                 </table>
-
-
             </div>
-
         );
     }
-
 }
 
 class Foo extends React.Component {
@@ -465,19 +399,10 @@ class Foo extends React.Component {
                         : <TruckView/>
                     }
                 </div>
-                {/*{showing1*/}
-                {/*    ? <button onClick={() => this.setState({showing1: !showing1})}>ClientView</button>*/}
-                {/*    : <MapView/>*/}
-                {/*}*/}
-                {/*{ showing2*/}
-                {/*    ? <button onClick={() => this.setState({ showing2: !showing2 })}>TruckView</button>*/}
-                {/*    : <TruckView/>*/}
-                {/*}*/}
             </div>
 
         )
     }
 }
 
-//render(<MapView/>, document.getElementById('app'));
 render(<Foo/>, document.getElementById('but'));
