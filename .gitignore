@@ -1,0 +1,4 @@
+.DS_Store
+sonarlint
+workspace.xml
+backend/venv/
