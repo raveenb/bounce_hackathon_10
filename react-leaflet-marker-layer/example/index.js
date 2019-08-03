@@ -270,22 +270,22 @@ class MapExample extends React.Component {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     />
                 </Map>
-                <p>{currentPosition}</p>
+                <p>{currentPosition[0]}, {currentPosition[1]}</p>
                 {this.props.clientDisplay
                     ? <div>
                         <div>
-                            <p>Surge: {this.surgeValue}% </p>
-                            <p>Acceptable time: {this.waitTime} mins </p>
+                            <p><b>Surge:</b> {this.surgeValue}% </p>
+                            <p><b>Acceptable time:</b> {this.waitTime} mins </p>
                         </div>
                         <div>
-                            <p>Accepted/Declined state: {this.acceptance}</p>
-                            <p>Expected time: {this.eta}</p>
+                            <p><b>Accepted/Declined state:</b> {this.acceptance}</p>
+                            <p><b>Expected time:</b> {this.eta}</p>
                         </div>
                     </div>
                     : <div>
                         <div>
-                            <p>Expected Arrival time: {this.waitTime} mins </p>
-                            <p>Distance: {this.surgeValue}mts </p>
+                            <p><b>Expected Arrival time:</b> {this.waitTime} mins </p>
+                            <p><b>Distance:</b> {this.surgeValue}mts </p>
                         </div>
                     </div>
                 }
@@ -391,13 +391,13 @@ class Foo extends React.Component {
             <div>
                 <div>
                     {showing1 === true || showing1 === "client"
-                        ? <button onClick={() => this.setState({showing1: "truck"})}>ClientView</button>
+                        ? <button style={{margin: "auto", display: "block", marginTop: "20px", marginBottom: "15px"}} onClick={() => this.setState({showing1: "truck"})}>ClientView</button>
                         : <MapView/>
                     }
                 </div>
                 <div>
                     {showing1 === true || showing1 === "truck"
-                        ? <button onClick={() => this.setState({showing1: "client"})}>TruckView</button>
+                        ? <button style={{margin: "auto", display: "block", marginTop: "15px", marginBottom: "20px"}} onClick={() => this.setState({showing1: "client"})}>TruckView</button>
                         : <TruckView/>
                     }
                 </div>
